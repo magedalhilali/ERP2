@@ -33,8 +33,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        # CHANGED: 'npm ci' to 'npm install' to fix the missing lock file error
-        run: npm install
+        run: npm install  # <--- CHANGED from 'npm ci'
 
       - name: Build project
         run: npm run build
