@@ -1,0 +1,5 @@
+{
+  "name": "ERP Readiness Tracker",
+  "description": "A comprehensive dashboard to track ERP implementation progress across departments, synthesizing vendor task completion and internal readiness metrics.",
+  "requestFramePermissions": []
+}
