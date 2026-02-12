@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { 
   Sun, Moon, Sunrise, Quote, Settings2, X, Check, 
   LayoutGrid, List, BarChart3, PanelTop, Image as ImageIcon,
-  Calendar, Bell, CheckCircle2, AlertCircle
+  Calendar, Bell, CheckCircle2, AlertCircle, Palette
 } from 'lucide-react';
 import { Theme, LayoutMode, BackgroundTheme, ReadinessScoreDetails } from '../types';
 import { THEMES, BACKGROUNDS } from '../services/theme';
@@ -49,7 +49,8 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
   currentBackground,
   onBackgroundChange
 }) => {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // We now track which specific modal is open: 'none', 'appearance', or 'settings'
+  const [activeModal, setActiveModal] = useState<'none' | 'appearance' | 'settings'>('none');
   const isDark = currentBackground.isDark;
 
   // Time & Date Logic
@@ -57,7 +58,6 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
     const now = new Date();
     const hour = now.getHours();
     
-    // Format Date: "Wednesday, Oct 24"
     const dateString = now.toLocaleDateString('en-US', { 
       weekday: 'long', 
       month: 'short', 
@@ -84,20 +84,17 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
       return { 
         type: 'alert', 
         message: `You have ${totalOverdue} overdue task${totalOverdue > 1 ? 's' : ''} requiring attention.`,
-        action: 'View Tasks'
       };
     }
     if (fullyReady === readinessData.length) {
       return { 
         type: 'success', 
         message: "All departments are fully ready for launch!",
-        action: 'View Report'
       };
     }
     return { 
       type: 'info', 
       message: `${fullyReady} of ${readinessData.length} departments are fully ready.`,
-      action: 'Check Status'
     };
   }, [readinessData]);
 
@@ -108,9 +105,11 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
     ? 'bg-slate-900/60 backdrop-blur-xl border-white/10 text-white' 
     : 'bg-white/80 backdrop-blur-xl border-slate-200/60 text-slate-800';
 
-  const settingsBtnClass = isDark
-    ? 'hover:bg-white/10 text-slate-400 hover:text-white border-white/5'
-    : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900 border-slate-200';
+  const btnBaseClass = `p-1.5 rounded-lg border transition-all ${
+    isDark 
+      ? 'hover:bg-white/10 text-slate-400 hover:text-white border-white/5' 
+      : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900 border-slate-200'
+  }`;
 
   return (
     <>
@@ -159,13 +158,24 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
                   <h3 className={`text-sm font-bold uppercase tracking-wider flex items-center gap-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     <Bell size={14} /> Daily Briefing
                   </h3>
-                  <button 
-                     onClick={() => setIsSettingsOpen(true)}
-                     className={`p-1.5 rounded-lg border transition-all ${settingsBtnClass}`}
-                     title="Customize"
-                  >
-                     <Settings2 size={16} />
-                  </button>
+                  
+                  {/* TWO SEPARATE BUTTONS */}
+                  <div className="flex items-center gap-2">
+                    <button 
+                       onClick={() => setActiveModal('appearance')}
+                       className={btnBaseClass}
+                       title="Appearance (Theme & Background)"
+                    >
+                       <Palette size={16} />
+                    </button>
+                    <button 
+                       onClick={() => setActiveModal('settings')}
+                       className={btnBaseClass}
+                       title="Dashboard Settings (Layout & View)"
+                    >
+                       <Settings2 size={16} />
+                    </button>
+                  </div>
                 </div>
 
                 <div className={`p-4 rounded-xl border flex items-start gap-3 transition-colors ${
@@ -198,20 +208,22 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
         </div>
       </div>
 
-      {/* Settings Modal */}
-      {isSettingsOpen && (
+      {/* =========================================================
+          MODAL 1: APPEARANCE (Backgrounds & Colors)
+         ========================================================= */}
+      {activeModal === 'appearance' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 
             className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
-            onClick={() => setIsSettingsOpen(false)}
+            onClick={() => setActiveModal('none')}
           ></div>
           <div className={`relative rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] ${isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-white text-slate-900'}`}>
             <div className={`p-6 border-b flex items-center justify-between shrink-0 ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
               <h3 className={`text-lg font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                <Settings2 size={18} className="text-blue-600" />
-                Dashboard Settings
+                <Palette size={18} className="text-blue-600" />
+                Appearance
               </h3>
-              <button onClick={() => setIsSettingsOpen(false)} className={`text-slate-400 ${isDark ? 'hover:text-white' : 'hover:text-slate-600'}`}>
+              <button onClick={() => setActiveModal('none')} className={`text-slate-400 ${isDark ? 'hover:text-white' : 'hover:text-slate-600'}`}>
                 <X size={20} />
               </button>
             </div>
@@ -260,59 +272,6 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
 
               <hr className={isDark ? 'border-white/10' : 'border-slate-100'} />
 
-              {/* UI Layout Section */}
-              <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">View Layout</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                     <button 
-                        onClick={() => onLayoutChange('grid')}
-                        className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
-                          layoutMode === 'grid' 
-                          ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
-                          : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
-                        }`}
-                     >
-                        <LayoutGrid size={24} />
-                        <span className="text-sm font-semibold">Grid View</span>
-                     </button>
-                     <button 
-                        onClick={() => onLayoutChange('list')}
-                        className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
-                          layoutMode === 'list' 
-                          ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
-                          : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
-                        }`}
-                     >
-                        <List size={24} />
-                        <span className="text-sm font-semibold">List View</span>
-                     </button>
-                  </div>
-              </div>
-
-              {/* Visibility Options */}
-              <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Visibility</h4>
-                  <div className="space-y-3">
-                      {[
-                        { label: 'Top Statistics', checked: showStats, onChange: onToggleStats, icon: PanelTop },
-                        { label: 'Analytics Chart', checked: showChart, onChange: onToggleChart, icon: BarChart3 },
-                        { label: 'Daily Quotes', checked: showQuotes, onChange: onToggleQuotes, icon: Quote },
-                      ].map((opt, i) => (
-                        <label key={i} className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer group ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'}`}>
-                           <div className="flex items-center gap-3">
-                               <div className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 text-slate-300 group-hover:bg-white/10' : 'bg-slate-100 text-slate-600 group-hover:bg-white group-hover:shadow-sm'}`}>
-                                   <opt.icon size={18} />
-                               </div>
-                               <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{opt.label}</span>
-                           </div>
-                           <input type="checkbox" checked={opt.checked} onChange={e => opt.onChange(e.target.checked)} className="accent-blue-600 w-5 h-5" />
-                        </label>
-                      ))}
-                  </div>
-              </div>
-
-              <hr className={isDark ? 'border-white/10' : 'border-slate-100'} />
-
               {/* Theme Selector */}
               <div>
                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Color Theme</h4>
@@ -349,10 +308,98 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
 
             <div className={`p-4 flex justify-end shrink-0 rounded-b-2xl ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
                 <button 
-                  onClick={() => setIsSettingsOpen(false)}
+                  onClick={() => setActiveModal('none')}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${isDark ? 'bg-white text-slate-900 hover:bg-slate-200' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
                 >
-                  Close
+                  Done
+                </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================
+          MODAL 2: DASHBOARD SETTINGS (Layout & Visibility)
+         ========================================================= */}
+      {activeModal === 'settings' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
+            onClick={() => setActiveModal('none')}
+          ></div>
+          <div className={`relative rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] ${isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-white text-slate-900'}`}>
+            <div className={`p-6 border-b flex items-center justify-between shrink-0 ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
+              <h3 className={`text-lg font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                <Settings2 size={18} className="text-blue-600" />
+                Dashboard Settings
+              </h3>
+              <button onClick={() => setActiveModal('none')} className={`text-slate-400 ${isDark ? 'hover:text-white' : 'hover:text-slate-600'}`}>
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-8 overflow-y-auto custom-scrollbar">
+              
+              {/* UI Layout Section */}
+              <div>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">View Layout</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                     <button 
+                        onClick={() => onLayoutChange('grid')}
+                        className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
+                          layoutMode === 'grid' 
+                          ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
+                          : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
+                        }`}
+                     >
+                        <LayoutGrid size={24} />
+                        <span className="text-sm font-semibold">Grid View</span>
+                     </button>
+                     <button 
+                        onClick={() => onLayoutChange('list')}
+                        className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
+                          layoutMode === 'list' 
+                          ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
+                          : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
+                        }`}
+                     >
+                        <List size={24} />
+                        <span className="text-sm font-semibold">List View</span>
+                     </button>
+                  </div>
+              </div>
+
+              <hr className={isDark ? 'border-white/10' : 'border-slate-100'} />
+
+              {/* Visibility Options */}
+              <div>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Visibility</h4>
+                  <div className="space-y-3">
+                      {[
+                        { label: 'Top Statistics', checked: showStats, onChange: onToggleStats, icon: PanelTop },
+                        { label: 'Analytics Chart', checked: showChart, onChange: onToggleChart, icon: BarChart3 },
+                        { label: 'Daily Quotes', checked: showQuotes, onChange: onToggleQuotes, icon: Quote },
+                      ].map((opt, i) => (
+                        <label key={i} className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer group ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'}`}>
+                           <div className="flex items-center gap-3">
+                               <div className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 text-slate-300 group-hover:bg-white/10' : 'bg-slate-100 text-slate-600 group-hover:bg-white group-hover:shadow-sm'}`}>
+                                   <opt.icon size={18} />
+                               </div>
+                               <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{opt.label}</span>
+                           </div>
+                           <input type="checkbox" checked={opt.checked} onChange={e => opt.onChange(e.target.checked)} className="accent-blue-600 w-5 h-5" />
+                        </label>
+                      ))}
+                  </div>
+              </div>
+            </div>
+
+            <div className={`p-4 flex justify-end shrink-0 rounded-b-2xl ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
+                <button 
+                  onClick={() => setActiveModal('none')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${isDark ? 'bg-white text-slate-900 hover:bg-slate-200' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
+                >
+                  Done
                 </button>
             </div>
           </div>
