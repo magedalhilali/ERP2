@@ -8,7 +8,6 @@ import { ScoreCard } from './components/ScoreCard';
 import { TaskModal } from './components/TaskModal';
 import { WelcomeCard } from './components/WelcomeCard';
 import { Onboarding } from './components/Onboarding';
-import { AppearanceMenu } from './components/AppearanceMenu'; // <--- NEW IMPORT
 import { THEMES, BACKGROUNDS, getThemeColor } from './services/theme';
 import { 
   BarChart3, 
@@ -260,15 +259,6 @@ function AppContent() {
                 )}
              </div>
              
-             {/* NEW: Appearance Menu Button */}
-             <AppearanceMenu 
-                currentTheme={currentTheme}
-                onThemeChange={handleThemeChange}
-                currentBackground={currentBackground}
-                onBackgroundChange={handleBackgroundChange}
-                isDark={isDark}
-             />
-
              <button 
                 onClick={loadData}
                 disabled={loading}
@@ -291,7 +281,7 @@ function AppContent() {
 
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         
-        {/* WELCOME SECTION - Removed Theme/Background props */}
+        {/* WELCOME SECTION - MENU IS NOW INSIDE HERE */}
         <WelcomeCard 
           userName={userName || 'User'} 
           readinessData={readinessData}
@@ -303,7 +293,11 @@ function AppContent() {
           onToggleChart={handleToggleChart}
           showStats={showStats}
           onToggleStats={handleToggleStats}
-          // Removed: currentTheme, onThemeChange, currentBackground, onBackgroundChange
+          // Pass these props down again so AppearanceMenu can use them
+          currentTheme={currentTheme}
+          onThemeChange={handleThemeChange}
+          currentBackground={currentBackground}
+          onBackgroundChange={handleBackgroundChange}
         />
 
         {/* TOP STATS */}
