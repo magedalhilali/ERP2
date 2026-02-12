@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { BrowserRouter } from 'react-router-dom'; // <--- IMPORT THIS
 import { processAllData } from './services/calculator';
 import { MOCK_SHEET_A_TASKS, MOCK_SHEET_B_ROWS } from './services/mockData';
 import { fetchRealData } from './services/api';
@@ -29,17 +30,17 @@ import {
   Cell 
 } from 'recharts';
 
-function App() {
+function AppContent() { // <--- RENAME YOUR MAIN COMPONENT TO AppContent
   const [readinessData, setReadinessData] = useState<ReadinessScoreDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [usingRealData, setUsingRealData] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState<ReadinessScoreDetails | null>(null);
-  
+   
   // User Preferences State
   const [userName, setUserName] = useState<string | null>(null);
   const [currentTheme, setCurrentTheme] = useState<Theme>(THEMES[0]);
   const [showQuotes, setShowQuotes] = useState(true);
-  
+   
   // UI Customization State
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('grid');
   const [showChart, setShowChart] = useState(true);
@@ -114,8 +115,8 @@ function App() {
   };
 
   const handleBackgroundChange = (bg: BackgroundTheme) => {
-     setCurrentBackground(bg);
-     localStorage.setItem('erpBackgroundId', bg.id);
+       setCurrentBackground(bg);
+       localStorage.setItem('erpBackgroundId', bg.id);
   };
 
   const handleLogout = () => {
@@ -183,19 +184,19 @@ function App() {
   const isDark = currentBackground.isDark;
   
   const textClasses = {
-     primary: isDark ? 'text-white' : 'text-slate-900',
-     secondary: isDark ? 'text-slate-300' : 'text-slate-500',
-     muted: isDark ? 'text-slate-400' : 'text-slate-400',
-     heading: isDark ? 'text-white' : 'text-slate-800'
+      primary: isDark ? 'text-white' : 'text-slate-900',
+      secondary: isDark ? 'text-slate-300' : 'text-slate-500',
+      muted: isDark ? 'text-slate-400' : 'text-slate-400',
+      heading: isDark ? 'text-white' : 'text-slate-800'
   };
 
   const headerClasses = isDark 
-     ? 'bg-slate-900/20 border-white/10 backdrop-blur-xl' 
-     : 'bg-white/50 border-slate-200/50 backdrop-blur-xl';
+      ? 'bg-slate-900/20 border-white/10 backdrop-blur-xl' 
+      : 'bg-white/50 border-slate-200/50 backdrop-blur-xl';
 
   const footerClasses = isDark
-     ? 'bg-slate-900/20 border-white/10 backdrop-blur-sm'
-     : 'bg-white/50 border-slate-200/50 backdrop-blur-sm';
+      ? 'bg-slate-900/20 border-white/10 backdrop-blur-sm'
+      : 'bg-white/50 border-slate-200/50 backdrop-blur-sm';
 
   const cardDarkClasses = 'bg-slate-900/70 backdrop-blur-md border-white/10';
   const cardLightClasses = 'bg-white border-slate-100 shadow-sm';
@@ -317,7 +318,7 @@ function App() {
               </div>
               <div className="mt-4 flex items-center gap-2">
                  <div className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}>
-                    +2.4%
+                   +2.4%
                  </div>
                  <span className={`text-xs ${textClasses.secondary}`}>from last week</span>
               </div>
@@ -467,4 +468,11 @@ function App() {
   );
 }
 
-export default App;
+// WRAP THE EXPORT TO INCLUDE THE ROUTER
+export default function App() {
+  return (
+    <BrowserRouter basename="/ERP2">
+      <AppContent />
+    </BrowserRouter>
+  );
+}
