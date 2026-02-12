@@ -112,8 +112,8 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
   const modalOverlayClass = "fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6";
   const modalBackdropClass = "absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity";
   
-  // Robust Modal Container Class
-  const modalContentClass = `relative w-full rounded-2xl shadow-2xl flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200 ${
+  // Base Modal Content Class
+  const modalContentClass = `relative rounded-2xl shadow-2xl flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200 ${
     isDark 
       ? 'bg-slate-900 border border-white/10 text-white' 
       : 'bg-white border border-slate-100 text-slate-900'
@@ -218,14 +218,14 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
       </div>
 
       {/* =========================================================
-          MODAL 1: APPEARANCE (WIDER & ROBUST)
+          MODAL 1: APPEARANCE (FORCED WIDE)
          ========================================================= */}
       {activeModal === 'appearance' && (
         <div className={modalOverlayClass}>
           <div className={modalBackdropClass} onClick={() => setActiveModal('none')}></div>
           
-          {/* Main Modal - Max Width Increased to 4xl for wide layout */}
-          <div className={`${modalContentClass} max-w-4xl`}>
+          {/* Main Modal - Forced Width Logic Here */}
+          <div className={`${modalContentClass} w-full md:w-[900px] max-w-[95vw]`}>
             
             {/* Header - Sticky */}
             <div className={`p-5 px-8 border-b flex items-center justify-between shrink-0 ${isDark ? 'bg-slate-900 border-white/10' : 'bg-slate-50/80 border-slate-100'}`}>
@@ -255,8 +255,8 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
                      </span>
                   </div>
                   
-                  {/* Grid increased to 4 columns for wider view */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {/* Grid forced to 4 columns on MD and up */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                      {BACKGROUNDS.map(bg => {
                        const isActive = currentBackground.id === bg.id;
                        return (
@@ -342,14 +342,14 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
       )}
 
       {/* =========================================================
-          MODAL 2: SETTINGS (CLEANER & FOCUSED)
+          MODAL 2: SETTINGS (Standard Width)
          ========================================================= */}
       {activeModal === 'settings' && (
         <div className={modalOverlayClass}>
           <div className={modalBackdropClass} onClick={() => setActiveModal('none')}></div>
           
           {/* Main Modal - Max Width XL */}
-          <div className={`${modalContentClass} max-w-xl`}>
+          <div className={`${modalContentClass} w-full max-w-xl`}>
             
             <div className={`p-5 px-8 border-b flex items-center justify-between shrink-0 ${isDark ? 'bg-slate-900 border-white/10' : 'bg-slate-50/80 border-slate-100'}`}>
               <div>
