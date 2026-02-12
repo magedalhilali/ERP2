@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { 
   Sun, Moon, Sunrise, Quote, Settings2, X, Check, 
   LayoutGrid, List, BarChart3, PanelTop, Image as ImageIcon,
-  Calendar, Bell, CheckCircle2, AlertCircle, Palette
+  Calendar, Bell, CheckCircle2, AlertCircle, Palette, Monitor
 } from 'lucide-react';
 import { Theme, LayoutMode, BackgroundTheme, ReadinessScoreDetails } from '../types';
 import { THEMES, BACKGROUNDS } from '../services/theme';
@@ -30,7 +30,6 @@ const QUOTES = [
   "The secret of getting ahead is getting started.",
   "Efficiency is doing things right; effectiveness is doing the right things.",
   "Success is the sum of small efforts, repeated day in and day out.",
-  "Great things in business are never done by one person. They're done by a team.",
 ];
 
 export const WelcomeCard: React.FC<WelcomeCardProps> = ({ 
@@ -49,7 +48,6 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
   currentBackground,
   onBackgroundChange
 }) => {
-  // We now track which specific modal is open: 'none', 'appearance', or 'settings'
   const [activeModal, setActiveModal] = useState<'none' | 'appearance' | 'settings'>('none');
   const isDark = currentBackground.isDark;
 
@@ -100,15 +98,25 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
 
   const Icon = timeInfo.icon;
 
-  // Dynamic Styles
+  // Styles
   const cardClasses = isDark 
     ? 'bg-slate-900/60 backdrop-blur-xl border-white/10 text-white' 
     : 'bg-white/80 backdrop-blur-xl border-slate-200/60 text-slate-800';
 
-  const btnBaseClass = `p-1.5 rounded-lg border transition-all ${
+  const btnBaseClass = `p-2 rounded-lg border transition-all flex items-center gap-2 text-sm font-medium ${
     isDark 
-      ? 'hover:bg-white/10 text-slate-400 hover:text-white border-white/5' 
-      : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900 border-slate-200'
+      ? 'hover:bg-white/10 text-slate-400 hover:text-white border-white/5 bg-slate-800/50' 
+      : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900 border-slate-200 bg-white'
+  }`;
+
+  const modalOverlayClass = "fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6";
+  const modalBackdropClass = "absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity";
+  
+  // Robust Modal Container Class
+  const modalContentClass = `relative w-full rounded-2xl shadow-2xl flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200 ${
+    isDark 
+      ? 'bg-slate-900 border border-white/10 text-white' 
+      : 'bg-white border border-slate-100 text-slate-900'
   }`;
 
   return (
@@ -150,11 +158,10 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
           <div className={`hidden md:block w-px my-6 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}></div>
 
           {/* RIGHT: Daily Briefing & Actions */}
-          <div className={`p-6 md:p-8 md:w-[400px] flex flex-col justify-between ${isDark ? 'bg-black/10' : 'bg-slate-50/50'}`}>
+          <div className={`p-6 md:p-8 md:w-[420px] flex flex-col justify-between ${isDark ? 'bg-black/10' : 'bg-slate-50/50'}`}>
               
-              {/* Briefing Card */}
               <div className="mb-4">
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className={`text-sm font-bold uppercase tracking-wider flex items-center gap-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     <Bell size={14} /> Daily Briefing
                   </h3>
@@ -164,16 +171,18 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
                     <button 
                        onClick={() => setActiveModal('appearance')}
                        className={btnBaseClass}
-                       title="Appearance (Theme & Background)"
+                       title="Theme & Background"
                     >
                        <Palette size={16} />
+                       <span className="sr-only sm:not-sr-only sm:text-xs">Theme</span>
                     </button>
                     <button 
                        onClick={() => setActiveModal('settings')}
                        className={btnBaseClass}
-                       title="Dashboard Settings (Layout & View)"
+                       title="Dashboard Settings"
                     >
                        <Settings2 size={16} />
+                       <span className="sr-only sm:not-sr-only sm:text-xs">View</span>
                     </button>
                   </div>
                 </div>
@@ -209,60 +218,67 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
       </div>
 
       {/* =========================================================
-          MODAL 1: APPEARANCE (Backgrounds & Colors)
+          MODAL 1: APPEARANCE (WIDER & ROBUST)
          ========================================================= */}
       {activeModal === 'appearance' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
-            onClick={() => setActiveModal('none')}
-          ></div>
-          <div className={`relative rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] ${isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-white text-slate-900'}`}>
-            <div className={`p-6 border-b flex items-center justify-between shrink-0 ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
-              <h3 className={`text-lg font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                <Palette size={18} className="text-blue-600" />
-                Appearance
-              </h3>
-              <button onClick={() => setActiveModal('none')} className={`text-slate-400 ${isDark ? 'hover:text-white' : 'hover:text-slate-600'}`}>
+        <div className={modalOverlayClass}>
+          <div className={modalBackdropClass} onClick={() => setActiveModal('none')}></div>
+          
+          {/* Main Modal - Max Width Increased to 4xl for wide layout */}
+          <div className={`${modalContentClass} max-w-4xl`}>
+            
+            {/* Header - Sticky */}
+            <div className={`p-5 px-8 border-b flex items-center justify-between shrink-0 ${isDark ? 'bg-slate-900 border-white/10' : 'bg-slate-50/80 border-slate-100'}`}>
+              <div>
+                <h3 className={`text-xl font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                  <Palette size={20} className="text-blue-600" />
+                  Visual Appearance
+                </h3>
+                <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Customize your workspace environment</p>
+              </div>
+              <button onClick={() => setActiveModal('none')} className={`p-2 rounded-full transition-colors ${isDark ? 'hover:bg-white/10 text-slate-400 hover:text-white' : 'hover:bg-slate-200 text-slate-500 hover:text-slate-900'}`}>
                 <X size={20} />
               </button>
             </div>
             
-            <div className="p-6 space-y-8 overflow-y-auto custom-scrollbar">
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
               
-              {/* Background Style Section */}
-              <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                     <ImageIcon size={12} /> Background Style
-                  </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {/* SECTION 1: Backgrounds */}
+              <div className="mb-10">
+                  <div className="flex items-center justify-between mb-4">
+                     <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <ImageIcon size={14} /> Background Atmosphere
+                     </h4>
+                     <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-500'}`}>
+                        {BACKGROUNDS.length} Presets
+                     </span>
+                  </div>
+                  
+                  {/* Grid increased to 4 columns for wider view */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                      {BACKGROUNDS.map(bg => {
                        const isActive = currentBackground.id === bg.id;
-                       const activeClass = isActive 
-                         ? 'border-blue-500 ring-2 ring-blue-500/20' 
-                         : (isDark ? 'border-white/10 hover:border-white/30' : 'border-slate-200 hover:border-blue-300');
-                       
                        return (
                          <button
                            key={bg.id}
                            onClick={() => onBackgroundChange(bg)}
-                           className={`group relative overflow-hidden rounded-xl border aspect-[1.5] transition-all ${activeClass}`}
+                           className={`group relative overflow-hidden rounded-xl border aspect-video transition-all duration-200 ${
+                             isActive 
+                               ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-lg scale-[1.02]' 
+                               : (isDark ? 'border-white/10 hover:border-white/30 opacity-80 hover:opacity-100' : 'border-slate-200 hover:border-blue-400 shadow-sm hover:shadow-md')
+                           }`}
                          >
-                           {/* Background Preview */}
-                           <div className={`absolute inset-0 w-full h-full ${bg.className}`}></div>
-                           
-                           {/* Checkmark overlay */}
+                           <div className={`absolute inset-0 w-full h-full ${bg.className} transition-transform duration-700 group-hover:scale-110`}></div>
                            {isActive && (
                              <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
-                               <div className="bg-white rounded-full p-1 shadow-sm">
-                                 <Check size={14} className="text-blue-600" />
+                               <div className="bg-white rounded-full p-1.5 shadow-xl">
+                                 <Check size={16} className="text-blue-600" />
                                </div>
                              </div>
                            )}
-
-                           {/* Label */}
-                           <div className="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/60 to-transparent text-left">
-                               <span className="text-[10px] font-bold text-white shadow-sm">{bg.name}</span>
+                           <div className="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent text-left">
+                               <span className="text-xs font-bold text-white shadow-sm tracking-wide">{bg.name}</span>
                            </div>
                          </button>
                        );
@@ -270,35 +286,41 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
                   </div>
               </div>
 
-              <hr className={isDark ? 'border-white/10' : 'border-slate-100'} />
+              <hr className={`my-8 ${isDark ? 'border-white/10' : 'border-slate-100'}`} />
 
-              {/* Theme Selector */}
+              {/* SECTION 2: Themes */}
               <div>
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Color Theme</h4>
-                <div className="grid grid-cols-1 gap-2">
+                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                   <Monitor size={14} /> Accent Theme
+                </h4>
+                {/* 2 Column Grid for themes (Cleaner than list) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                    {THEMES.map(theme => {
                      const isActive = currentTheme.id === theme.id;
                      return (
                        <button
                          key={theme.id}
                          onClick={() => onThemeChange(theme)}
-                         className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                         className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 ${
                              isActive 
-                             ? 'border-blue-500 bg-blue-500/10 ring-1 ring-blue-500/20' 
-                             : (isDark ? 'border-white/10 hover:border-white/30 hover:bg-white/5' : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50')
+                             ? 'border-blue-500 bg-blue-500/10 ring-1 ring-blue-500/20 shadow-md' 
+                             : (isDark ? 'border-white/10 hover:border-white/30 hover:bg-white/5' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50')
                          }`}
                        >
-                          <div className="flex items-center gap-3">
-                             <div className="flex gap-1">
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.ranges[0].color }}></div>
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.ranges[2].color }}></div>
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.ranges[4].color }}></div>
+                          <div className="flex items-center gap-4">
+                             <div className="flex -space-x-2">
+                                <div className="w-6 h-6 rounded-full ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: theme.ranges[0].color }}></div>
+                                <div className="w-6 h-6 rounded-full ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: theme.ranges[2].color }}></div>
+                                <div className="w-6 h-6 rounded-full ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: theme.ranges[4].color }}></div>
                              </div>
-                             <span className={`font-medium ${isActive ? 'text-blue-500' : (isDark ? 'text-slate-300' : 'text-slate-700')}`}>
-                                {theme.name}
-                             </span>
+                             <div className="text-left">
+                               <span className={`block font-bold text-sm ${isActive ? 'text-blue-500' : (isDark ? 'text-slate-200' : 'text-slate-700')}`}>
+                                  {theme.name}
+                               </span>
+                               <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Professional Palette</span>
+                             </div>
                           </div>
-                          {isActive && <Check size={16} className="text-blue-600" />}
+                          {isActive && <div className="bg-blue-600 text-white p-1 rounded-full"><Check size={14} /></div>}
                        </button>
                      );
                    })}
@@ -306,12 +328,13 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
               </div>
             </div>
 
-            <div className={`p-4 flex justify-end shrink-0 rounded-b-2xl ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
+            {/* Footer - Sticky */}
+            <div className={`p-5 border-t flex justify-end shrink-0 ${isDark ? 'bg-slate-900 border-white/10' : 'bg-slate-50/80 border-slate-100'}`}>
                 <button 
                   onClick={() => setActiveModal('none')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${isDark ? 'bg-white text-slate-900 hover:bg-slate-200' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
+                  className={`px-6 py-2.5 rounded-xl font-semibold transition-transform active:scale-95 text-sm shadow-lg ${isDark ? 'bg-white text-slate-900 hover:bg-slate-200' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
                 >
-                  Done
+                  Apply Changes
                 </button>
             </div>
           </div>
@@ -319,85 +342,101 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
       )}
 
       {/* =========================================================
-          MODAL 2: DASHBOARD SETTINGS (Layout & Visibility)
+          MODAL 2: SETTINGS (CLEANER & FOCUSED)
          ========================================================= */}
       {activeModal === 'settings' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
-            onClick={() => setActiveModal('none')}
-          ></div>
-          <div className={`relative rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] ${isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-white text-slate-900'}`}>
-            <div className={`p-6 border-b flex items-center justify-between shrink-0 ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
-              <h3 className={`text-lg font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                <Settings2 size={18} className="text-blue-600" />
-                Dashboard Settings
-              </h3>
-              <button onClick={() => setActiveModal('none')} className={`text-slate-400 ${isDark ? 'hover:text-white' : 'hover:text-slate-600'}`}>
+        <div className={modalOverlayClass}>
+          <div className={modalBackdropClass} onClick={() => setActiveModal('none')}></div>
+          
+          {/* Main Modal - Max Width XL */}
+          <div className={`${modalContentClass} max-w-xl`}>
+            
+            <div className={`p-5 px-8 border-b flex items-center justify-between shrink-0 ${isDark ? 'bg-slate-900 border-white/10' : 'bg-slate-50/80 border-slate-100'}`}>
+              <div>
+                <h3 className={`text-xl font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                  <Settings2 size={20} className="text-blue-600" />
+                  Dashboard View
+                </h3>
+              </div>
+              <button onClick={() => setActiveModal('none')} className={`p-2 rounded-full transition-colors ${isDark ? 'hover:bg-white/10 text-slate-400 hover:text-white' : 'hover:bg-slate-200 text-slate-500 hover:text-slate-900'}`}>
                 <X size={20} />
               </button>
             </div>
             
-            <div className="p-6 space-y-8 overflow-y-auto custom-scrollbar">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
               
-              {/* UI Layout Section */}
-              <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">View Layout</h4>
-                  <div className="grid grid-cols-2 gap-3">
+              {/* Layout Section */}
+              <div className="mb-8">
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Content Layout</h4>
+                  <div className="grid grid-cols-2 gap-4">
                      <button 
                         onClick={() => onLayoutChange('grid')}
-                        className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
+                        className={`relative overflow-hidden flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border-2 transition-all ${
                           layoutMode === 'grid' 
-                          ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
-                          : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600' 
+                          : (isDark ? 'border-white/5 hover:border-white/20 bg-white/5 text-slate-400' : 'border-slate-100 hover:border-slate-300 bg-slate-50 text-slate-600')
                         }`}
                      >
-                        <LayoutGrid size={24} />
-                        <span className="text-sm font-semibold">Grid View</span>
+                        <div className="p-3 bg-white dark:bg-slate-800 rounded-full shadow-sm">
+                           <LayoutGrid size={24} />
+                        </div>
+                        <span className="font-bold text-sm">Grid Cards</span>
+                        {layoutMode === 'grid' && <div className="absolute top-3 right-3 text-blue-500"><CheckCircle2 size={18} /></div>}
                      </button>
                      <button 
                         onClick={() => onLayoutChange('list')}
-                        className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
+                        className={`relative overflow-hidden flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border-2 transition-all ${
                           layoutMode === 'list' 
-                          ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
-                          : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600' 
+                          : (isDark ? 'border-white/5 hover:border-white/20 bg-white/5 text-slate-400' : 'border-slate-100 hover:border-slate-300 bg-slate-50 text-slate-600')
                         }`}
                      >
-                        <List size={24} />
-                        <span className="text-sm font-semibold">List View</span>
+                        <div className="p-3 bg-white dark:bg-slate-800 rounded-full shadow-sm">
+                           <List size={24} />
+                        </div>
+                        <span className="font-bold text-sm">List Rows</span>
+                        {layoutMode === 'list' && <div className="absolute top-3 right-3 text-blue-500"><CheckCircle2 size={18} /></div>}
                      </button>
                   </div>
               </div>
 
-              <hr className={isDark ? 'border-white/10' : 'border-slate-100'} />
+              <hr className={`my-8 ${isDark ? 'border-white/10' : 'border-slate-100'}`} />
 
               {/* Visibility Options */}
               <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Visibility</h4>
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Widget Visibility</h4>
                   <div className="space-y-3">
                       {[
-                        { label: 'Top Statistics', checked: showStats, onChange: onToggleStats, icon: PanelTop },
-                        { label: 'Analytics Chart', checked: showChart, onChange: onToggleChart, icon: BarChart3 },
-                        { label: 'Daily Quotes', checked: showQuotes, onChange: onToggleQuotes, icon: Quote },
+                        { label: 'Key Statistics', sub: 'Show top level metrics', checked: showStats, onChange: onToggleStats, icon: PanelTop },
+                        { label: 'Performance Chart', sub: 'Show readiness graph', checked: showChart, onChange: onToggleChart, icon: BarChart3 },
+                        { label: 'Inspirational Quotes', sub: 'Show daily motivation', checked: showQuotes, onChange: onToggleQuotes, icon: Quote },
                       ].map((opt, i) => (
-                        <label key={i} className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer group ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'}`}>
-                           <div className="flex items-center gap-3">
-                               <div className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 text-slate-300 group-hover:bg-white/10' : 'bg-slate-100 text-slate-600 group-hover:bg-white group-hover:shadow-sm'}`}>
-                                   <opt.icon size={18} />
+                        <label key={i} className={`flex items-center justify-between p-4 rounded-xl border transition-colors cursor-pointer group ${isDark ? 'border-white/5 hover:bg-white/5' : 'border-slate-100 hover:bg-white hover:shadow-sm'}`}>
+                           <div className="flex items-center gap-4">
+                               <div className={`p-2.5 rounded-lg transition-all ${isDark ? 'bg-white/5 text-slate-300 group-hover:text-white' : 'bg-slate-100 text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50'}`}>
+                                   <opt.icon size={20} />
                                </div>
-                               <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{opt.label}</span>
+                               <div>
+                                  <span className={`block font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{opt.label}</span>
+                                  <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{opt.sub}</span>
+                               </div>
                            </div>
-                           <input type="checkbox" checked={opt.checked} onChange={e => opt.onChange(e.target.checked)} className="accent-blue-600 w-5 h-5" />
+                           
+                           {/* Custom Switch UI */}
+                           <div className={`w-12 h-7 rounded-full transition-colors flex items-center px-1 ${opt.checked ? 'bg-blue-600' : (isDark ? 'bg-slate-700' : 'bg-slate-200')}`}>
+                              <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${opt.checked ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                           </div>
+                           <input type="checkbox" checked={opt.checked} onChange={e => opt.onChange(e.target.checked)} className="hidden" />
                         </label>
                       ))}
                   </div>
               </div>
             </div>
 
-            <div className={`p-4 flex justify-end shrink-0 rounded-b-2xl ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
+            <div className={`p-5 border-t flex justify-end shrink-0 ${isDark ? 'bg-slate-900 border-white/10' : 'bg-slate-50/80 border-slate-100'}`}>
                 <button 
                   onClick={() => setActiveModal('none')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${isDark ? 'bg-white text-slate-900 hover:bg-slate-200' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
+                  className={`px-6 py-2.5 rounded-xl font-semibold transition-transform active:scale-95 text-sm shadow-lg ${isDark ? 'bg-white text-slate-900 hover:bg-slate-200' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
                 >
                   Done
                 </button>
