@@ -40,7 +40,11 @@ export const MOCK_SHEET_B_ROWS: InternalReadinessRow[] = [
     totalDevicesNeeded: 15,
     masterDataStatus: 'Completed',
     preTrainingStatus: 'Completed',
-    trainingStatus: 'In Progress'
+    trainingStatus: 'In Progress',
+    usernameListStatus: 'Completed',
+    permissionStatus: 'Completed',
+    workflowStatus: 'Completed',
+    approvalMatrixStatus: 'Completed'
   },
   {
     department: 'Procurement',
@@ -48,7 +52,11 @@ export const MOCK_SHEET_B_ROWS: InternalReadinessRow[] = [
     totalDevicesNeeded: 10,
     masterDataStatus: 'In Progress',
     preTrainingStatus: 'Completed',
-    trainingStatus: 'Pending'
+    trainingStatus: 'Pending',
+    usernameListStatus: 'Completed',
+    permissionStatus: 'Pending',
+    workflowStatus: 'Pending',
+    approvalMatrixStatus: 'Pending'
   },
   {
     department: 'Logistics',
@@ -56,7 +64,11 @@ export const MOCK_SHEET_B_ROWS: InternalReadinessRow[] = [
     totalDevicesNeeded: 20,
     masterDataStatus: 'Completed',
     preTrainingStatus: 'Completed',
-    trainingStatus: 'Completed'
+    trainingStatus: 'Completed',
+    usernameListStatus: 'Completed',
+    permissionStatus: 'Completed',
+    workflowStatus: 'Completed',
+    approvalMatrixStatus: 'Completed'
   },
   {
     department: 'Projects',
@@ -64,7 +76,11 @@ export const MOCK_SHEET_B_ROWS: InternalReadinessRow[] = [
     totalDevicesNeeded: 15,
     masterDataStatus: 'Pending',
     preTrainingStatus: 'Pending',
-    trainingStatus: 'Pending'
+    trainingStatus: 'Pending',
+    usernameListStatus: 'Pending',
+    permissionStatus: 'Pending',
+    workflowStatus: 'Pending',
+    approvalMatrixStatus: 'Pending'
   },
   {
     department: 'HR',
@@ -72,6 +88,10 @@ export const MOCK_SHEET_B_ROWS: InternalReadinessRow[] = [
     totalDevicesNeeded: 12,
     masterDataStatus: 'Completed',
     preTrainingStatus: 'Completed',
-    trainingStatus: 'Completed'
+    trainingStatus: 'Completed',
+    usernameListStatus: 'Completed',
+    permissionStatus: 'Completed',
+    workflowStatus: 'In Progress',
+    approvalMatrixStatus: 'Completed'
   }
 ];

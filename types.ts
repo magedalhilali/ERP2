@@ -14,6 +14,11 @@ export interface InternalReadinessRow {
   masterDataStatus: 'Completed' | 'Pending' | 'In Progress' | string;
   preTrainingStatus: 'Completed' | 'Pending' | 'Scheduled' | string;
   trainingStatus: 'Completed' | 'Pending' | 'In Progress' | string;
+  // New Fields (10% weight combined)
+  usernameListStatus?: string;
+  permissionStatus?: string;
+  workflowStatus?: string;
+  approvalMatrixStatus?: string;
 }
 
 export interface DepartmentStats {
@@ -42,7 +47,8 @@ export interface ReadinessScoreDetails {
   masterDataScore: number;    // Component 3
   preTrainingScore: number;   // Component 4
   trainingScore: number;      // Component 5
-  totalScore: number;         // Average of components
+  userReadinessScore: number; // Component 6 (New 10% weight)
+  totalScore: number;         // Weighted Average
   nextMilestoneDate?: string | null; // Earliest pending task date
   estCompletionDate?: string | null; // Latest task date
 }
@@ -59,3 +65,12 @@ export interface Theme {
   name: string;
   ranges: ThemeRange[];
 }
+
+export interface BackgroundTheme {
+  id: string;
+  name: string;
+  className: string;
+  isDark: boolean;
+}
+
+export type LayoutMode = 'grid' | 'list';

@@ -5,9 +5,28 @@ const formatDate = (date: Date): string => {
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
+// Helper to check if a status string counts as "Done"
+const isCompleted = (status?: string) => {
+  if (!status) return 0;
+  const s = status.toLowerCase().trim();
+  
+  // Explicitly handle "Not Yet Received" to ensure it returns 0
+  if (s === 'not yet received') return 0;
+
+  return (
+    s === 'completed' || 
+    s === 'complete' || 
+    s === 'done' || 
+    s === 'yes' || 
+    s === 'received' || 
+    s === 'finished'
+  ) ? 1 : 0;
+};
+
 /**
- * LOGIC FROM REQUIREMENT 3:
- * Calculate "Total Readiness Score" by averaging 5 components.
+ * LOGIC UPDATE:
+ * 1. 5 Existing Components share 90% weight (18% each).
+ * 2. 4 New Components (User/Admin) share 10% weight combined.
  */
 export const calculateDepartmentReadiness = (
   row: InternalReadinessRow, 
@@ -22,22 +41,31 @@ export const calculateDepartmentReadiness = (
   }
 
   // Component 2: Master Data
-  const masterDataStatus = row.masterDataStatus.toLowerCase().trim();
-  const masterDataScore = (masterDataStatus === 'completed' || masterDataStatus === 'complete' || masterDataStatus === 'done') ? 1 : 0;
+  const masterDataScore = isCompleted(row.masterDataStatus);
 
   // Component 3: ERP Vendor Progress
   const vendorScore = vendorStats.progress;
 
   // Component 4: Pre-Training
-  const preTrainingStatus = row.preTrainingStatus.toLowerCase().trim();
-  const preTrainingScore = (preTrainingStatus === 'completed' || preTrainingStatus === 'complete' || preTrainingStatus === 'done') ? 1 : 0;
+  const preTrainingScore = isCompleted(row.preTrainingStatus);
 
   // Component 5: Training
-  const trainingStatus = row.trainingStatus.toLowerCase().trim();
-  const trainingScore = (trainingStatus === 'completed' || trainingStatus === 'complete' || trainingStatus === 'done') ? 1 : 0;
+  const trainingScore = isCompleted(row.trainingStatus);
 
-  // Final Formula
-  const totalScore = (deviceRatio + masterDataScore + vendorScore + preTrainingScore + trainingScore) / 5;
+  // Component 6: User & Admin Readiness (New 10% Block)
+  // Average of 4 sub-components
+  const usernameScore = isCompleted(row.usernameListStatus);
+  const permissionScore = isCompleted(row.permissionStatus);
+  const workflowScore = isCompleted(row.workflowStatus);
+  const matrixScore = isCompleted(row.approvalMatrixStatus);
+  
+  const userReadinessScore = (usernameScore + permissionScore + workflowScore + matrixScore) / 4;
+
+  // --- Final Weighted Formula ---
+  // Old 5 components = 90% (0.18 each)
+  // New component = 10% (0.10)
+  const coreAverage = (deviceRatio + masterDataScore + vendorScore + preTrainingScore + trainingScore) / 5;
+  const totalScore = (coreAverage * 0.90) + (userReadinessScore * 0.10);
 
   // --- Date Logic ---
   let nextMilestone: string | null = null;
@@ -61,7 +89,7 @@ export const calculateDepartmentReadiness = (
 
         // Next Milestone: Earliest date for PENDING tasks
         // Filter out completed tasks
-        const pending = validDates.filter(t => !['done', 'completed', 'complete', 'yes', 'finished'].includes(t.status));
+        const pending = validDates.filter(t => !['done', 'completed', 'complete', 'yes', 'finished', 'received'].includes(t.status));
         const sortedPendingAsc = pending.sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
         
         if (sortedPendingAsc.length > 0) {
@@ -84,6 +112,7 @@ export const calculateDepartmentReadiness = (
     masterDataScore,
     preTrainingScore,
     trainingScore,
+    userReadinessScore,
     totalScore,
     nextMilestoneDate: nextMilestone,
     estCompletionDate: estCompletion
