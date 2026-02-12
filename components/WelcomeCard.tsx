@@ -1,15 +1,15 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { 
   Sun, Moon, Sunrise, Quote, Settings2, X, Check, 
   LayoutGrid, List, BarChart3, PanelTop, Image as ImageIcon,
-  Calendar, Bell, CheckCircle2, AlertCircle, ArrowRight
+  Calendar, Bell, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { Theme, LayoutMode, BackgroundTheme, ReadinessScoreDetails } from '../types';
 import { THEMES, BACKGROUNDS } from '../services/theme';
 
 interface WelcomeCardProps {
   userName: string;
-  readinessData: ReadinessScoreDetails[]; // Added for Daily Briefing
+  readinessData: ReadinessScoreDetails[];
   currentTheme: Theme;
   onThemeChange: (theme: Theme) => void;
   showQuotes: boolean;
@@ -42,7 +42,7 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
   onToggleQuotes,
   layoutMode,
   onLayoutChange,
-  showChart,
+  showChart, 
   onToggleChart,
   showStats,
   onToggleStats,
@@ -152,47 +152,47 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
 
           {/* RIGHT: Daily Briefing & Actions */}
           <div className={`p-6 md:p-8 md:w-[400px] flex flex-col justify-between ${isDark ? 'bg-black/10' : 'bg-slate-50/50'}`}>
-             
-             {/* Briefing Card */}
-             <div className="mb-4">
-               <div className="flex items-center justify-between mb-3">
-                 <h3 className={`text-sm font-bold uppercase tracking-wider flex items-center gap-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                   <Bell size={14} /> Daily Briefing
-                 </h3>
-                 <button 
-                    onClick={() => setIsSettingsOpen(true)}
-                    className={`p-1.5 rounded-lg border transition-all ${settingsBtnClass}`}
-                    title="Customize"
-                 >
-                    <Settings2 size={16} />
-                 </button>
-               </div>
+              
+              {/* Briefing Card */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className={`text-sm font-bold uppercase tracking-wider flex items-center gap-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <Bell size={14} /> Daily Briefing
+                  </h3>
+                  <button 
+                     onClick={() => setIsSettingsOpen(true)}
+                     className={`p-1.5 rounded-lg border transition-all ${settingsBtnClass}`}
+                     title="Customize"
+                  >
+                     <Settings2 size={16} />
+                  </button>
+                </div>
 
-               <div className={`p-4 rounded-xl border flex items-start gap-3 transition-colors ${
-                 briefing.type === 'alert' 
-                   ? (isDark ? 'bg-rose-500/10 border-rose-500/20' : 'bg-rose-50 border-rose-100') 
-                   : briefing.type === 'success'
-                   ? (isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-100')
-                   : (isDark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100')
-               }`}>
-                  <div className={`mt-0.5 ${
-                    briefing.type === 'alert' ? 'text-rose-500' : briefing.type === 'success' ? 'text-emerald-500' : 'text-blue-500'
-                  }`}>
-                    {briefing.type === 'alert' ? <AlertCircle size={18} /> : <CheckCircle2 size={18} />}
-                  </div>
-                  <div>
-                    <p className={`text-sm font-medium leading-relaxed ${
-                      briefing.type === 'alert' 
-                        ? (isDark ? 'text-rose-200' : 'text-rose-700') 
-                        : briefing.type === 'success'
-                        ? (isDark ? 'text-emerald-200' : 'text-emerald-700')
-                        : (isDark ? 'text-blue-200' : 'text-blue-700')
-                    }`}>
-                      {briefing.message}
-                    </p>
-                  </div>
-               </div>
-             </div>
+                <div className={`p-4 rounded-xl border flex items-start gap-3 transition-colors ${
+                  briefing.type === 'alert' 
+                    ? (isDark ? 'bg-rose-500/10 border-rose-500/20' : 'bg-rose-50 border-rose-100') 
+                    : briefing.type === 'success'
+                    ? (isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-100')
+                    : (isDark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100')
+                }`}>
+                   <div className={`mt-0.5 ${
+                     briefing.type === 'alert' ? 'text-rose-500' : briefing.type === 'success' ? 'text-emerald-500' : 'text-blue-500'
+                   }`}>
+                     {briefing.type === 'alert' ? <AlertCircle size={18} /> : <CheckCircle2 size={18} />}
+                   </div>
+                   <div>
+                     <p className={`text-sm font-medium leading-relaxed ${
+                       briefing.type === 'alert' 
+                         ? (isDark ? 'text-rose-200' : 'text-rose-700') 
+                         : briefing.type === 'success'
+                         ? (isDark ? 'text-emerald-200' : 'text-emerald-700')
+                         : (isDark ? 'text-blue-200' : 'text-blue-700')
+                     }`}>
+                       {briefing.message}
+                     </p>
+                   </div>
+                </div>
+              </div>
 
           </div>
         </div>
@@ -220,95 +220,95 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
               
               {/* Background Style Section */}
               <div>
-                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                    <ImageIcon size={12} /> Background Style
-                 </h4>
-                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {BACKGROUNDS.map(bg => {
-                      const isActive = currentBackground.id === bg.id;
-                      const activeClass = isActive 
-                        ? 'border-blue-500 ring-2 ring-blue-500/20' 
-                        : (isDark ? 'border-white/10 hover:border-white/30' : 'border-slate-200 hover:border-blue-300');
-                      
-                      return (
-                        <button
-                          key={bg.id}
-                          onClick={() => onBackgroundChange(bg)}
-                          className={`group relative overflow-hidden rounded-xl border aspect-[1.5] transition-all ${activeClass}`}
-                        >
-                          {/* Background Preview */}
-                          <div className={`absolute inset-0 w-full h-full ${bg.className}`}></div>
-                          
-                          {/* Checkmark overlay */}
-                          {isActive && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
-                              <div className="bg-white rounded-full p-1 shadow-sm">
-                                <Check size={14} className="text-blue-600" />
-                              </div>
-                            </div>
-                          )}
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                     <ImageIcon size={12} /> Background Style
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                     {BACKGROUNDS.map(bg => {
+                       const isActive = currentBackground.id === bg.id;
+                       const activeClass = isActive 
+                         ? 'border-blue-500 ring-2 ring-blue-500/20' 
+                         : (isDark ? 'border-white/10 hover:border-white/30' : 'border-slate-200 hover:border-blue-300');
+                       
+                       return (
+                         <button
+                           key={bg.id}
+                           onClick={() => onBackgroundChange(bg)}
+                           className={`group relative overflow-hidden rounded-xl border aspect-[1.5] transition-all ${activeClass}`}
+                         >
+                           {/* Background Preview */}
+                           <div className={`absolute inset-0 w-full h-full ${bg.className}`}></div>
+                           
+                           {/* Checkmark overlay */}
+                           {isActive && (
+                             <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
+                               <div className="bg-white rounded-full p-1 shadow-sm">
+                                 <Check size={14} className="text-blue-600" />
+                               </div>
+                             </div>
+                           )}
 
-                          {/* Label */}
-                          <div className="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/60 to-transparent text-left">
-                              <span className="text-[10px] font-bold text-white shadow-sm">{bg.name}</span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                 </div>
+                           {/* Label */}
+                           <div className="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/60 to-transparent text-left">
+                               <span className="text-[10px] font-bold text-white shadow-sm">{bg.name}</span>
+                           </div>
+                         </button>
+                       );
+                     })}
+                  </div>
               </div>
 
               <hr className={isDark ? 'border-white/10' : 'border-slate-100'} />
 
               {/* UI Layout Section */}
               <div>
-                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">View Layout</h4>
-                 <div className="grid grid-cols-2 gap-3">
-                    <button 
-                       onClick={() => onLayoutChange('grid')}
-                       className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
-                         layoutMode === 'grid' 
-                         ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
-                         : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
-                       }`}
-                    >
-                       <LayoutGrid size={24} />
-                       <span className="text-sm font-semibold">Grid View</span>
-                    </button>
-                    <button 
-                       onClick={() => onLayoutChange('list')}
-                       className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
-                         layoutMode === 'list' 
-                         ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
-                         : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
-                       }`}
-                    >
-                       <List size={24} />
-                       <span className="text-sm font-semibold">List View</span>
-                    </button>
-                 </div>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">View Layout</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                     <button 
+                        onClick={() => onLayoutChange('grid')}
+                        className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
+                          layoutMode === 'grid' 
+                          ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
+                          : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
+                        }`}
+                     >
+                        <LayoutGrid size={24} />
+                        <span className="text-sm font-semibold">Grid View</span>
+                     </button>
+                     <button 
+                        onClick={() => onLayoutChange('list')}
+                        className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
+                          layoutMode === 'list' 
+                          ? 'border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20' 
+                          : (isDark ? 'border-white/10 hover:bg-white/5 text-slate-400' : 'border-slate-200 hover:bg-slate-50 text-slate-600')
+                        }`}
+                     >
+                        <List size={24} />
+                        <span className="text-sm font-semibold">List View</span>
+                     </button>
+                  </div>
               </div>
 
               {/* Visibility Options */}
               <div>
-                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Visibility</h4>
-                 <div className="space-y-3">
-                     {[
-                       { label: 'Top Statistics', checked: showStats, onChange: onToggleStats, icon: PanelTop },
-                       { label: 'Analytics Chart', checked: showChart, onChange: onToggleChart, icon: BarChart3 },
-                       { label: 'Daily Quotes', checked: showQuotes, onChange: onToggleQuotes, icon: Quote },
-                     ].map((opt, i) => (
-                       <label key={i} className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer group ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'}`}>
-                          <div className="flex items-center gap-3">
-                              <div className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 text-slate-300 group-hover:bg-white/10' : 'bg-slate-100 text-slate-600 group-hover:bg-white group-hover:shadow-sm'}`}>
-                                  <opt.icon size={18} />
-                              </div>
-                              <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{opt.label}</span>
-                          </div>
-                          <input type="checkbox" checked={opt.checked} onChange={e => opt.onChange(e.target.checked)} className="accent-blue-600 w-5 h-5" />
-                       </label>
-                     ))}
-                 </div>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Visibility</h4>
+                  <div className="space-y-3">
+                      {[
+                        { label: 'Top Statistics', checked: showStats, onChange: onToggleStats, icon: PanelTop },
+                        { label: 'Analytics Chart', checked: showChart, onChange: onToggleChart, icon: BarChart3 },
+                        { label: 'Daily Quotes', checked: showQuotes, onChange: onToggleQuotes, icon: Quote },
+                      ].map((opt, i) => (
+                        <label key={i} className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer group ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'}`}>
+                           <div className="flex items-center gap-3">
+                               <div className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 text-slate-300 group-hover:bg-white/10' : 'bg-slate-100 text-slate-600 group-hover:bg-white group-hover:shadow-sm'}`}>
+                                   <opt.icon size={18} />
+                               </div>
+                               <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{opt.label}</span>
+                           </div>
+                           <input type="checkbox" checked={opt.checked} onChange={e => opt.onChange(e.target.checked)} className="accent-blue-600 w-5 h-5" />
+                        </label>
+                      ))}
+                  </div>
               </div>
 
               <hr className={isDark ? 'border-white/10' : 'border-slate-100'} />
@@ -321,13 +321,13 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
                      const isActive = currentTheme.id === theme.id;
                      return (
                        <button
-                          key={theme.id}
-                          onClick={() => onThemeChange(theme)}
-                          className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                              isActive 
-                              ? 'border-blue-500 bg-blue-500/10 ring-1 ring-blue-500/20' 
-                              : (isDark ? 'border-white/10 hover:border-white/30 hover:bg-white/5' : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50')
-                          }`}
+                         key={theme.id}
+                         onClick={() => onThemeChange(theme)}
+                         className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                             isActive 
+                             ? 'border-blue-500 bg-blue-500/10 ring-1 ring-blue-500/20' 
+                             : (isDark ? 'border-white/10 hover:border-white/30 hover:bg-white/5' : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50')
+                         }`}
                        >
                           <div className="flex items-center gap-3">
                              <div className="flex gap-1">
