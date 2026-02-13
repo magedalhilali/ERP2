@@ -26,12 +26,42 @@ interface WelcomeCardProps {
 
 // 1. ENSURE THIS ARRAY EXISTS
 const QUOTES = [
+  // --- Executive & Business ---
+  "The only way to do great work is to love what you do.",
+  "Opportunities don't happen, you create them.",
+  "The best way to predict the future is to create it.",
+  "Perfection is not attainable, but if we chase perfection we can catch excellence.",
+  "Efficiency is doing things right; effectiveness is doing the right things.",
+  "Success is not final, failure is not fatal: it is the courage to continue that counts.",
   "Quality means doing it right when no one is looking.",
   "Productivity is never an accident. It is always the result of a commitment to excellence.",
-  "The secret of getting ahead is getting started.",
-  "Efficiency is doing things right; effectiveness is doing the right things.",
-  "Success is the sum of small efforts, repeated day in and day out.",
   "Great things in business are never done by one person. They're done by a team.",
+  "The secret of getting ahead is getting started.",
+  "Identify your problems, but give your power and energy to solutions.",
+  
+  // --- Scientific Genius (Einstein, Newton, Da Vinci) ---
+  "In the middle of difficulty lies opportunity.",
+  "If I have seen further, it is by standing on the shoulders of giants.",
+  "Imagination is more important than knowledge.",
+  "Truth is ever to be found in simplicity, and not in the multiplicity and confusion of things.",
+  "It is not that I'm so smart. But I stay with the questions much longer.",
+  "Life is like riding a bicycle. To keep your balance, you must keep moving.",
+  "Genius is one percent inspiration and ninety-nine percent perspiration.",
+  "Simplicity is the ultimate sophistication.",
+  "Learn from yesterday, live for today, hope for tomorrow.",
+
+  // --- Arabic Wisdom & Philosophy ---
+  "Yesterday I was clever, so I wanted to change the world. Today I am wise, so I am changing myself.",
+  "A moment of patience in a moment of anger saves you a hundred moments of regret.",
+  "Knowledge without action is like a tree without fruit.",
+  "Time is like a sword; if you do not cut it, it will cut you.",
+  "Ignorance leads to fear, fear leads to hate, and hate leads to violence.",
+  "He who has health, has hope; and he who has hope, has everything.",
+  "Trust in God, but tie your camel.",
+  "Good character is the one thing that can make a person beautiful who is not beautiful.",
+  "Do not grieve over the past, for it has gone. Live in the present and make it beautiful.",
+  "A wise man makes his own decisions, an ignorant man follows the public opinion.",
+  "The tongue is like a lion; if you let it loose, it will wound someone."
 ];
 
 export const WelcomeCard: React.FC<WelcomeCardProps> = ({ 
