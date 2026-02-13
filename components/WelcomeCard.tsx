@@ -24,12 +24,14 @@ interface WelcomeCardProps {
   onBackgroundChange: (bg: BackgroundTheme) => void;
 }
 
+// 1. ENSURE THIS ARRAY EXISTS
 const QUOTES = [
   "Quality means doing it right when no one is looking.",
   "Productivity is never an accident. It is always the result of a commitment to excellence.",
   "The secret of getting ahead is getting started.",
   "Efficiency is doing things right; effectiveness is doing the right things.",
   "Success is the sum of small efforts, repeated day in and day out.",
+  "Great things in business are never done by one person. They're done by a team.",
 ];
 
 export const WelcomeCard: React.FC<WelcomeCardProps> = ({ 
@@ -112,8 +114,7 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
   const modalOverlayClass = "fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6";
   const modalBackdropClass = "absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity";
   
-  // Base Modal Content Class
-  const modalContentClass = `relative rounded-2xl shadow-2xl flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200 ${
+  const modalContentClass = `relative rounded-2xl shadow-2xl flex flex-col max-h-[85vh] ${
     isDark 
       ? 'bg-slate-900 border border-white/10 text-white' 
       : 'bg-white border border-slate-100 text-slate-900'
@@ -147,7 +148,8 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
              </div>
              
              {showQuotes && (
-               <div className="mt-4 flex items-start gap-2 max-w-lg opacity-0 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
+               /* 2. FIXED: Removed 'opacity-0' and 'animate-in' so text is always visible */
+               <div className="mt-4 flex items-start gap-2 max-w-lg">
                   <Quote size={14} className={`${isDark ? 'text-slate-500' : 'text-slate-400'} mt-0.5 flex-shrink-0`} />
                   <p className={`text-sm italic ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{quote}</p>
                </div>
@@ -224,7 +226,6 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
         <div className={modalOverlayClass}>
           <div className={modalBackdropClass} onClick={() => setActiveModal('none')}></div>
           
-          {/* Main Modal - Forced Width Logic Here */}
           <div className={`${modalContentClass} w-full md:w-[900px] max-w-[95vw]`}>
             
             {/* Header - Sticky */}
@@ -293,7 +294,6 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
                 <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                    <Monitor size={14} /> Accent Theme
                 </h4>
-                {/* 2 Column Grid for themes (Cleaner than list) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                    {THEMES.map(theme => {
                      const isActive = currentTheme.id === theme.id;
@@ -348,7 +348,6 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({
         <div className={modalOverlayClass}>
           <div className={modalBackdropClass} onClick={() => setActiveModal('none')}></div>
           
-          {/* Main Modal - Max Width XL */}
           <div className={`${modalContentClass} w-full max-w-xl`}>
             
             <div className={`p-5 px-8 border-b flex items-center justify-between shrink-0 ${isDark ? 'bg-slate-900 border-white/10' : 'bg-slate-50/80 border-slate-100'}`}>
